@@ -3,7 +3,7 @@ import {
   generatePlainToken,
   hashToken,
   compareToken,
-} from "../utils/tokenUtils.js";
+} from "../utils/generateToken.js";
 import jwt from "jsonwebtoken";
 
 // =====================
