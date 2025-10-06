@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  mobile_no   String?  @unique
+  password    String
+  role        String   @default("user")
+  theme       String   @default("light")
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  surveys     Survey[]
+}
+
+model Survey {
+  id             String     @id @default(uuid())
+  title          String
+  description    String?
+  no_of_questions Int       @default(0)
+  user           User       @relation(fields: [userId], references: [id])
+  userId         String
+  survey_send_by String     @default("none")
+  flow_type      String     @default("static")
+  settings       Json       @default("{}")
+  status         String     @default("draft")
+  scheduled_date DateTime?
+  scheduled_type String     @default("immediate")
+  is_deleted     Boolean    @default(false)
+  created_at     DateTime   @default(now())
+  updated_at     DateTime   @updatedAt
+  questions      Question[]
+  responses      Response[]
+  share_tokens   ShareToken[]
+}
+
+model Question {
+  id             String    @id @default(uuid())
+  survey         Survey    @relation(fields: [surveyId], references: [id])
+  surveyId       String
+  question_type  String
+  question_text  String
+  options        Json      @default("[]")
+  media          Json      @default("[]")
+  order_index    Int       @default(0)
+  required       Boolean   @default(false)
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+  response_answers ResponseAnswer[]
+}
+
+model Response {
+  id           String           @id @default(uuid())
+  survey       Survey           @relation(fields: [surveyId], references: [id])
+  surveyId     String
+  user_metadata Json             @default("{}")
+  created_at   DateTime         @default(now())
+  response_answers ResponseAnswer[]
+}
+
+model ResponseAnswer {
+  id            String    @id @default(uuid())
+  response      Response  @relation(fields: [responseId], references: [id])
+  responseId    String
+  question      Question  @relation(fields: [questionId], references: [id])
+  questionId    String
+  answer_type   String
+  answer_value  String?
+  media         Json      @default("[]")
+  submitted_at  DateTime  @default(now())
+  created_at    DateTime  @default(now())
+}
+
+model ShareToken {
+  id              String   @id @default(uuid())
+  survey          Survey   @relation(fields: [surveyId], references: [id])
+  surveyId        String
+  recipient_email String?
+  recipient_mobile String?
+  token_hash      String
+  expires_at      DateTime?
+  used            Boolean  @default(false)
+  created_at      DateTime @default(now())
+}
