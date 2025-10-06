@@ -7,6 +7,7 @@ import questionRoutes from "./routes/questionRoutes.js";
 import responseRoutes from "./routes/responseRoutes.js";
 import shareRoutes from "./routes/shareRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
+import { swaggerDocs } from "./docs/swagger.js";
 
 const app = express();
 app.use(cors());
@@ -20,5 +21,8 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/responses", responseRoutes);
 app.use("/api/share", shareRoutes);
 app.use("/api/reports", reportRoutes);
+
+// SWAGGER DOCS
+swaggerDocs(app, process.env.PORT || 5000);
 
 export default app;
